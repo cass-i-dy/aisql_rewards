@@ -5,148 +5,148 @@
     "questionResults": [
       {
         "question": "How many customers have ordered?",
-        "sql": "\nSELECT COUNT(DISTINCT person_id) AS customers_ordered FROM orders;\n",
+        "sql": "\nSELECT COUNT(DISTINCT person_id) AS total_customers_ordered FROM orders;\n",
         "queryRawResponse": "[(15,)]",
-        "friendlyResponse": "There are 15 customers who have ordered!",
+        "friendlyResponse": "It looks like 15 customers have ordered!",
         "error": "None"
       },
       {
         "question": "What is the max rewards someone has?",
-        "sql": "\nSELECT MAX(reward_total) AS max_rewards FROM reward_total;\n",
+        "sql": "\nSELECT MAX(reward_total) AS max_reward FROM reward_total;\n",
         "queryRawResponse": "[(None,)]",
-        "friendlyResponse": "It seems there are no available rewards to report at the moment.",
+        "friendlyResponse": "It looks like there might not be any rewards recorded.",
         "error": "None"
       },
       {
         "question": "Who doesn't have an email?",
-        "sql": "\nSELECT p.person_id, p.first_name, p.last_name \nFROM person p \nLEFT JOIN email e ON p.person_id = e.person_id \nWHERE e.person_id IS NULL;\n",
+        "sql": "\nSELECT p.first_name, p.last_name\nFROM person p\nLEFT JOIN email e ON p.person_id = e.person_id\nWHERE e.person_id IS NULL;\n",
         "queryRawResponse": "[]",
-        "friendlyResponse": "It seems that everyone you asked has an email! \ud83d\ude0a",
+        "friendlyResponse": "It seems like everyone you asked has an email!",
         "error": "None"
       },
       {
         "question": "Who all opted out of receiving email updates?",
         "sql": "\nSELECT first_name, last_name, email_name \nFROM person \nJOIN email ON person.person_id = email.person_id \nWHERE promo_updates = 0;\n",
         "queryRawResponse": "[('Angella', 'Smith', 'angellasmith@yahoo.com'), ('David', 'Williams', 'davidw@gmail.com'), ('Jane', 'Roe', 'janeroe@hotmail.com'), ('Oliver', 'Brown', 'oliverbrown@gmail.com'), ('Ethan', 'Taylor', 'ethantaylor@hotmail.com'), ('Isabella', 'Thomas', 'isabellathomas@outlook.com')]",
-        "friendlyResponse": "Here are the names of those who opted out of receiving email updates: Angella Smith, David Williams, Jane Roe, Oliver Brown, Ethan Taylor, and Isabella Thomas.",
+        "friendlyResponse": "Sure! The following people opted out of receiving email updates: Angella Smith, David Williams, Jane Roe, Oliver Brown, Ethan Taylor, and Isabella Thomas.",
         "error": "None"
       },
       {
         "question": "Who has made the most orders?",
-        "sql": "\nSELECT person_id, COUNT(order_id) AS total_orders\nFROM orders\nGROUP BY person_id\nORDER BY total_orders DESC\nLIMIT 1;\n",
+        "sql": "\nSELECT person_id, COUNT(order_id) AS number_of_orders \nFROM orders \nGROUP BY person_id \nORDER BY number_of_orders DESC \nLIMIT 1;\n",
         "queryRawResponse": "[(6, 3)]",
         "friendlyResponse": "The person with the most orders has made 6 orders.",
         "error": "None"
       },
       {
         "question": "Who has the same first name as someone else?",
-        "sql": "\nSELECT first_name\nFROM person\nGROUP BY first_name\nHAVING COUNT(*) > 1;\n",
+        "sql": "\nSELECT first_name \nFROM person \nGROUP BY first_name \nHAVING COUNT(*) > 1;\n",
         "queryRawResponse": "[]",
-        "friendlyResponse": "It seems there were no names found that match.",
+        "friendlyResponse": "It looks like there are no matches for that query.",
         "error": "None"
       },
       {
         "question": "Who didn't order anything?",
         "sql": "\nSELECT p.person_id, p.first_name, p.last_name\nFROM person p\nLEFT JOIN orders o ON p.person_id = o.person_id\nWHERE o.order_id IS NULL;\n",
         "queryRawResponse": "[]",
-        "friendlyResponse": "It looks like everyone ordered something! \ud83d\ude0a",
+        "friendlyResponse": "It looks like no one ordered anything! \ud83d\ude0a",
         "error": "None"
       },
       {
         "question": "Is everyone ordering food?",
-        "sql": "\nSELECT p.first_name, p.last_name, COUNT(o.order_id) AS order_count\nFROM person p\nLEFT JOIN orders o ON p.person_id = o.person_id\nGROUP BY p.person_id;\n",
-        "queryRawResponse": "[('Charlie', 'Reid', 1), ('Angella', 'Smith', 1), ('Darrel', 'Johnson', 1), ('Sarah', 'Waller', 1), ('David', 'Williams', 1), ('John', 'Doe', 3), ('Jane', 'Roe', 1), ('Michael', 'Smith', 2), ('Emily', 'Davis', 2), ('Oliver', 'Brown', 1), ('Amelia', 'Wilson', 1), ('Ethan', 'Taylor', 1), ('Sophia', 'Moore', 1), ('William', 'Anderson', 1), ('Isabella', 'Thomas', 1)]",
-        "friendlyResponse": "It looks like everyone except John Doe is ordering food, and he ordered three!",
+        "sql": "\nSELECT p.first_name, p.last_name, \n       CASE WHEN o.order_id IS NOT NULL THEN 'Yes' ELSE 'No' END AS ordered_food\nFROM person p\nLEFT JOIN orders o ON p.person_id = o.person_id;\n",
+        "queryRawResponse": "[('Charlie', 'Reid', 'Yes'), ('Angella', 'Smith', 'Yes'), ('Darrel', 'Johnson', 'Yes'), ('Sarah', 'Waller', 'Yes'), ('David', 'Williams', 'Yes'), ('John', 'Doe', 'Yes'), ('John', 'Doe', 'Yes'), ('John', 'Doe', 'Yes'), ('Jane', 'Roe', 'Yes'), ('Michael', 'Smith', 'Yes'), ('Michael', 'Smith', 'Yes'), ('Emily', 'Davis', 'Yes'), ('Emily', 'Davis', 'Yes'), ('Oliver', 'Brown', 'Yes'), ('Amelia', 'Wilson', 'Yes'), ('Ethan', 'Taylor', 'Yes'), ('Sophia', 'Moore', 'Yes'), ('William', 'Anderson', 'Yes'), ('Isabella', 'Thomas', 'Yes')]",
+        "friendlyResponse": "Yes, everyone is ordering food!",
         "error": "None"
       },
       {
         "question": "What is the most ordered food item?",
-        "sql": "\nSELECT food_name, COUNT(*) AS order_count\nFROM orders o\nJOIN food_reward f ON o.food_id = f.food_id\nGROUP BY food_name\nORDER BY order_count DESC\nLIMIT 1;\n",
+        "sql": "\nSELECT food_name, COUNT(order_id) AS order_count\nFROM food_reward\nJOIN orders ON food_reward.food_id = orders.food_id\nGROUP BY food_name\nORDER BY order_count DESC\nLIMIT 1;\n",
         "queryRawResponse": "[('Chicken Nuggets', 4)]",
         "friendlyResponse": "The most ordered food item is Chicken Nuggets!",
         "error": "None"
       },
       {
         "question": "What is everyone's favorite food?",
-        "sql": "\nSELECT p.first_name, p.last_name, fr.food_name\nFROM person p\nJOIN orders o ON p.person_id = o.person_id\nJOIN food_reward fr ON o.food_id = fr.food_id;\n",
+        "sql": "\nSELECT p.first_name, p.last_name, fr.food_name\nFROM orders o\nJOIN person p ON o.person_id = p.person_id\nJOIN food_reward fr ON o.food_id = fr.food_id;\n",
         "queryRawResponse": "[('Angella', 'Smith', 'Chicken Nuggets'), ('John', 'Doe', 'Chicken Nuggets'), ('Michael', 'Smith', 'Chicken Nuggets'), ('Ethan', 'Taylor', 'Chicken Nuggets'), ('Sarah', 'Waller', 'Chicken Salad'), ('Jane', 'Roe', 'Chicken Salad'), ('Emily', 'Davis', 'Chicken Salad'), ('William', 'Anderson', 'Chicken Salad'), ('Charlie', 'Reid', 'Chicken Sandwich'), ('John', 'Doe', 'Chicken Sandwich'), ('Michael', 'Smith', 'Chicken Sandwich'), ('Sophia', 'Moore', 'Chicken Sandwich'), ('David', 'Williams', 'Fruit Side'), ('Amelia', 'Wilson', 'Fruit Side'), ('Isabella', 'Thomas', 'Fruit Side'), ('Darrel', 'Johnson', 'Waffle Fries'), ('John', 'Doe', 'Waffle Fries'), ('Emily', 'Davis', 'Waffle Fries'), ('Oliver', 'Brown', 'Waffle Fries')]",
-        "friendlyResponse": "It looks like most people enjoy Chicken Nuggets, followed by Chicken Salad and Chicken Sandwich. Waffle Fries and Fruit Sides are also popular!",
+        "friendlyResponse": "It looks like chicken nuggets are a hit, with several people loving them! Chicken salad and chicken sandwiches are also popular choices. Waffle fries and fruit sides have their fans too!",
         "error": "None"
       }
     ]
   },
   {
     "strategy": "single_domain_double_shot",
-    "prompt_prefix": "Create table person (\nperson_id INT auto_increment Primary key,\nfirst_name VARCHAR(25) NOT NULL,\nlast_name VARCHAR(25) NOT NULL,\nbirth_date DATE);\n\nCreate table email (\nemail_id INT primary key,\nperson_id INT NOT NULL, \nemail_name VARCHAR(100) NOT NULL,\npromo_updates TINYINT NOT NULL,\nforeign key (person_id) references person (person_id)\n);\n\nCREATE table food_reward (\nfood_id INT auto_increment Primary key,\nfood_name VARCHAR(50) NOT NULL unique,\nreward_amount INT NOT NULL);\n\n\nCREATE table orders (\norder_id INT auto_increment Primary key,\nperson_id INT NOT NUll,\nfood_id INT NOT NULL,\ncurr_date DATE,\nforeign key (person_id) references person (person_id),\nforeign key (food_id) references food_reward (food_id)\n);\n\nCREATE table reward_total (\nperson_id INT NOT NULL,\nreward_total INT,\nnumber_orders INT,\nforeign key (person_id) references person (person_id)\n);\n\nINSERT INTO person (first_name, last_name, birth_date) VALUES\n('Charlie', 'Reid', '1985-06-15'),\n('Angella', 'Smith', '1990-03-22'),\n('Darrel', 'Johnson', '1978-11-02'),\n('Sarah', 'Waller', '1995-08-30'),\n('David', 'Williams', '2002-12-11');\n\nINSERT INTO email (email_id, person_id, email_name, promo_updates) VALUES\n(1, 1, 'charlesried@gmail.com', 1),\n(2, 2, 'angellasmith@yahoo.com', 0),\n(3, 3, 'darrelj@outlook.com', 1),\n(4, 4, 'sarahw@hotmail.com', 1),\n(5, 5, 'davidw@gmail.com', 0);\n\nINSERT INTO food_reward (food_name, reward_amount) VALUES\n('Chicken Sandwich', 80),\n('Chicken Nuggets', 75),\n('Waffle Fries', 30),\n('Chicken Salad', 60),\n('Fruit Side', 40);\n\nINSERT INTO orders (person_id, food_id, curr_date) VALUES\n(1, 1, '2024-10-01'),\n(2, 2, '2024-10-02'),\n(3, 3, '2024-10-03'),\n(4, 4, '2024-10-04'),\n(5, 5, '2024-10-05');\n\nINSERT INTO reward_total (person_id, reward_total, number_orders) VALUES\n(1, 80, 1),\n(2, 75, 1),\n(3, 30, 1),\n(4, 60, 1),\n(5, 40, 1);\n Who doesn't have a way for us to text them?  \nSELECT p.person_id, p.name\nFROM person p\nLEFT JOIN phone ph ON p.person_id = ph.person_id AND ph.can_recieve_sms = 1\nWHERE ph.phone_id IS NULL;\n  Give me a mysql select statement that answers the question. Only respond with mysql syntax. If there is an error do not explain it.",
+    "prompt_prefix": "Create table person (\nperson_id INT auto_increment Primary key,\nfirst_name VARCHAR(25) NOT NULL,\nlast_name VARCHAR(25) NOT NULL,\nbirth_date DATE);\n\nCreate table email (\nemail_id INT primary key,\nperson_id INT NOT NULL, \nemail_name VARCHAR(100) NOT NULL,\npromo_updates TINYINT NOT NULL,\nforeign key (person_id) references person (person_id)\n);\n\nCREATE table food_reward (\nfood_id INT auto_increment Primary key,\nfood_name VARCHAR(50) NOT NULL unique,\nreward_amount INT NOT NULL);\n\n\nCREATE table orders (\norder_id INT auto_increment Primary key,\nperson_id INT NOT NUll,\nfood_id INT NOT NULL,\ncurr_date DATE,\nforeign key (person_id) references person (person_id),\nforeign key (food_id) references food_reward (food_id)\n);\n\nCREATE table reward_total (\nperson_id INT NOT NULL,\nreward_total INT,\nnumber_orders INT,\nforeign key (person_id) references person (person_id)\n);\n\nINSERT INTO person (first_name, last_name, birth_date) VALUES\n('Charlie', 'Reid', '1985-06-15'),\n('Angella', 'Smith', '1990-03-22'),\n('Darrel', 'Johnson', '1978-11-02'),\n('Sarah', 'Waller', '1995-08-30'),\n('David', 'Williams', '2002-12-11');\n\nINSERT INTO email (email_id, person_id, email_name, promo_updates) VALUES\n(1, 1, 'charlesried@gmail.com', 1),\n(2, 2, 'angellasmith@yahoo.com', 0),\n(3, 3, 'darrelj@outlook.com', 1),\n(4, 4, 'sarahw@hotmail.com', 1),\n(5, 5, 'davidw@gmail.com', 0);\n\nINSERT INTO food_reward (food_name, reward_amount) VALUES\n('Chicken Sandwich', 80),\n('Chicken Nuggets', 75),\n('Waffle Fries', 30),\n('Chicken Salad', 60),\n('Fruit Side', 40);\n\nINSERT INTO orders (person_id, food_id, curr_date) VALUES\n(1, 1, '2024-10-01'),\n(2, 2, '2024-10-02'),\n(3, 3, '2024-10-03'),\n(4, 4, '2024-10-04'),\n(5, 5, '2024-10-05');\n\nINSERT INTO reward_total (person_id, reward_total, number_orders) VALUES\n(1, 80, 1),\n(2, 75, 1),\n(3, 30, 1),\n(4, 60, 1),\n(5, 40, 1);\n Who has made the most orders? \nSELECT person_id, COUNT(order_id) AS total_orders\nFROM orders\nGROUP BY person_id\nORDER BY total_orders DESC\nLIMIT 1;\n Give me a mysql select statement that answers the question. Only respond with mysql syntax. If there is an error do not explain it.",
     "questionResults": [
       {
         "question": "How many customers have ordered?",
-        "sql": "\nSELECT COUNT(DISTINCT person_id) AS total_customers_ordered\nFROM orders;\n",
+        "sql": "\nSELECT COUNT(DISTINCT person_id) AS total_customers\nFROM orders;\n",
         "queryRawResponse": "[(15,)]",
         "friendlyResponse": "There are 15 customers who have ordered!",
         "error": "None"
       },
       {
         "question": "What is the max rewards someone has?",
-        "sql": "\nSELECT MAX(reward_total) AS max_rewards \nFROM reward_total;\n",
-        "queryRawResponse": "[(None,)]",
-        "friendlyResponse": "It seems there are currently no recorded maximum rewards.",
-        "error": "None"
+        "sql": "\nSELECT person_id, MAX(reward_total) AS max_rewards\nFROM reward_total;\n",
+        "queryRawResponse": null,
+        "friendlyResponse": null,
+        "error": "1140 (42000): In aggregated query without GROUP BY, expression #1 of SELECT list contains nonaggregated column 'restaurant_rewards.reward_total.person_id'; this is incompatible with sql_mode=only_full_group_by"
       },
       {
         "question": "Who doesn't have an email?",
-        "sql": "\nSELECT p.person_id, CONCAT(p.first_name, ' ', p.last_name) AS name\nFROM person p\nLEFT JOIN email e ON p.person_id = e.person_id\nWHERE e.email_id IS NULL;\n",
+        "sql": "\nSELECT person_id, first_name, last_name\nFROM person\nWHERE person_id NOT IN (SELECT DISTINCT person_id FROM email);\n",
         "queryRawResponse": "[]",
-        "friendlyResponse": "It seems everyone has an email! \ud83d\ude0a",
+        "friendlyResponse": "It seems like everyone you asked has an email!",
         "error": "None"
       },
       {
         "question": "Who all opted out of receiving email updates?",
-        "sql": "\nSELECT p.person_id, CONCAT(p.first_name, ' ', p.last_name) AS name\nFROM person p\nJOIN email e ON p.person_id = e.person_id\nWHERE e.promo_updates = 0;\n",
-        "queryRawResponse": "[(2, 'Angella Smith'), (5, 'David Williams'), (7, 'Jane Roe'), (10, 'Oliver Brown'), (12, 'Ethan Taylor'), (15, 'Isabella Thomas')]",
-        "friendlyResponse": "The following people opted out of receiving email updates: Angella Smith, David Williams, Jane Roe, Oliver Brown, Ethan Taylor, and Isabella Thomas.",
+        "sql": "\nSELECT first_name, last_name, email_name\nFROM person\nJOIN email ON person.person_id = email.person_id\nWHERE promo_updates = 0;\n",
+        "queryRawResponse": "[('Angella', 'Smith', 'angellasmith@yahoo.com'), ('David', 'Williams', 'davidw@gmail.com'), ('Jane', 'Roe', 'janeroe@hotmail.com'), ('Oliver', 'Brown', 'oliverbrown@gmail.com'), ('Ethan', 'Taylor', 'ethantaylor@hotmail.com'), ('Isabella', 'Thomas', 'isabellathomas@outlook.com')]",
+        "friendlyResponse": "Here are the people who opted out of receiving email updates: \n\n- Angella Smith (angellasmith@yahoo.com)\n- David Williams (davidw@gmail.com)\n- Jane Roe (janeroe@hotmail.com)\n- Oliver Brown (oliverbrown@gmail.com)\n- Ethan Taylor (ethantaylor@hotmail.com)\n- Isabella Thomas (isabellathomas@outlook.com)",
         "error": "None"
       },
       {
         "question": "Who has made the most orders?",
         "sql": "\nSELECT person_id, COUNT(order_id) AS total_orders\nFROM orders\nGROUP BY person_id\nORDER BY total_orders DESC\nLIMIT 1;\n",
         "queryRawResponse": "[(6, 3)]",
-        "friendlyResponse": "The person with the most orders has made 6 orders.",
+        "friendlyResponse": "The person with the most orders made 6 in total!",
         "error": "None"
       },
       {
         "question": "Who has the same first name as someone else?",
-        "sql": "\nSELECT p1.first_name\nFROM person p1\nJOIN person p2 ON p1.first_name = p2.first_name AND p1.person_id <> p2.person_id;\n",
+        "sql": "\nSELECT first_name \nFROM person \nGROUP BY first_name \nHAVING COUNT(first_name) > 1;\n",
         "queryRawResponse": "[]",
-        "friendlyResponse": "It looks like no matches were found for that question.",
+        "friendlyResponse": "It seems there are no matches for that name!",
         "error": "None"
       },
       {
         "question": "Who didn't order anything?",
-        "sql": "\nSELECT p.person_id, CONCAT(p.first_name, ' ', p.last_name) AS name\nFROM person p\nLEFT JOIN orders o ON p.person_id = o.person_id\nWHERE o.order_id IS NULL;\n",
+        "sql": "\nSELECT person_id, first_name, last_name\nFROM person\nWHERE person_id NOT IN (SELECT DISTINCT person_id FROM orders);\n",
         "queryRawResponse": "[]",
-        "friendlyResponse": "It looks like no one ordered anything!",
+        "friendlyResponse": "It looks like everyone ordered something!",
         "error": "None"
       },
       {
         "question": "Is everyone ordering food?",
-        "sql": "\nSELECT p.person_id, p.first_name, p.last_name\nFROM person p\nLEFT JOIN orders o ON p.person_id = o.person_id\nWHERE o.order_id IS NULL;\n",
+        "sql": "\nSELECT person_id\nFROM person\nWHERE person_id NOT IN (SELECT DISTINCT person_id FROM orders);\n",
         "queryRawResponse": "[]",
-        "friendlyResponse": "It looks like no one is ordering food right now!",
+        "friendlyResponse": "It looks like no one is ordering food! \ud83d\ude0a",
         "error": "None"
       },
       {
         "question": "What is the most ordered food item?",
-        "sql": "\nSELECT fr.food_name, COUNT(o.order_id) AS order_count\nFROM food_reward fr\nJOIN orders o ON fr.food_id = o.food_id\nGROUP BY fr.food_name\nORDER BY order_count DESC\nLIMIT 1;\n",
-        "queryRawResponse": "[('Chicken Nuggets', 4)]",
-        "friendlyResponse": "The most ordered food item is Chicken Nuggets! \ud83c\udf57",
+        "sql": "\nSELECT food_id, COUNT(order_id) AS total_orders\nFROM orders\nGROUP BY food_id\nORDER BY total_orders DESC\nLIMIT 1;\n",
+        "queryRawResponse": "[(1, 4)]",
+        "friendlyResponse": "The most ordered food item is the pizza!",
         "error": "None"
       },
       {
         "question": "What is everyone's favorite food?",
-        "sql": "\nSELECT p.first_name, p.last_name, fr.food_name\nFROM person p\nJOIN orders o ON p.person_id = o.person_id\nJOIN food_reward fr ON o.food_id = fr.food_id;\n",
-        "queryRawResponse": "[('Angella', 'Smith', 'Chicken Nuggets'), ('John', 'Doe', 'Chicken Nuggets'), ('Michael', 'Smith', 'Chicken Nuggets'), ('Ethan', 'Taylor', 'Chicken Nuggets'), ('Sarah', 'Waller', 'Chicken Salad'), ('Jane', 'Roe', 'Chicken Salad'), ('Emily', 'Davis', 'Chicken Salad'), ('William', 'Anderson', 'Chicken Salad'), ('Charlie', 'Reid', 'Chicken Sandwich'), ('John', 'Doe', 'Chicken Sandwich'), ('Michael', 'Smith', 'Chicken Sandwich'), ('Sophia', 'Moore', 'Chicken Sandwich'), ('David', 'Williams', 'Fruit Side'), ('Amelia', 'Wilson', 'Fruit Side'), ('Isabella', 'Thomas', 'Fruit Side'), ('Darrel', 'Johnson', 'Waffle Fries'), ('John', 'Doe', 'Waffle Fries'), ('Emily', 'Davis', 'Waffle Fries'), ('Oliver', 'Brown', 'Waffle Fries')]",
-        "friendlyResponse": "Sure! Here are the favorite foods from everyone: \n\n- Chicken Nuggets: Angella Smith, John Doe, Michael Smith, Ethan Taylor\n- Chicken Salad: Sarah Waller, Jane Roe, Emily Davis, William Anderson\n- Chicken Sandwich: Charlie Reid, John Doe, Michael Smith, Sophia Moore\n- Fruit Side: David Williams, Amelia Wilson, Isabella Thomas\n- Waffle Fries: Darrel Johnson, John Doe, Emily Davis, Oliver Brown",
+        "sql": "\nSELECT person_id, food_id, COUNT(food_id) AS favorite_food_count\nFROM orders\nGROUP BY person_id, food_id\nORDER BY favorite_food_count DESC;\n",
+        "queryRawResponse": "[(1, 1, 1), (2, 2, 1), (3, 3, 1), (4, 4, 1), (5, 5, 1), (6, 1, 1), (6, 3, 1), (6, 2, 1), (7, 4, 1), (8, 2, 1), (8, 1, 1), (9, 3, 1), (9, 4, 1), (10, 3, 1), (11, 5, 1), (12, 2, 1), (13, 1, 1), (14, 4, 1), (15, 5, 1)]",
+        "friendlyResponse": "It looks like everyone has their unique favorites! Here are some popular choices: \n\n1. Food 1\n2. Food 2\n3. Food 3\n4. Food 4\n5. Food 5\n\nLet me know if you want more details!",
         "error": "None"
       }
     ]

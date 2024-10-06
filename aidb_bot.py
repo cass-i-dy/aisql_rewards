@@ -1,7 +1,7 @@
 import json
 from openai import OpenAI
 import os
-from db_bot import connect_to_sql, create_database, insert_data
+from run_sql import connect_to_sql, create_database, insert_data
 import mysql.connector
 
 def read_file(file):
@@ -101,8 +101,8 @@ def main():
 	strategies = {
 		"zero_shot": set_up_sql + commonSqlOnlyRequest,
 		"single_domain_double_shot": (set_up_sql +
-									  " Who doesn't have a way for us to text them? " +
-									  " \nSELECT p.person_id, p.name\nFROM person p\nLEFT JOIN phone ph ON p.person_id = ph.person_id AND ph.can_recieve_sms = 1\nWHERE ph.phone_id IS NULL;\n " +
+									  " Who has made the most orders? " +
+									  "\nSELECT person_id, COUNT(order_id) AS total_orders\nFROM orders\nGROUP BY person_id\nORDER BY total_orders DESC\nLIMIT 1;\n"+
 									  commonSqlOnlyRequest)
 	}
 
