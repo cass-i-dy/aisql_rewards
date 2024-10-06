@@ -1,6 +1,6 @@
 # Restaurant Rewards
 
-My project models data that a online rewards app could have in keeping track of customer orders and rewards. Includes contact information, login information, and order information for a person.
+My project models data that a online rewards restaurant app could have in keeping track of customer orders and rewards. Includes contact information, login information, and order information for a person.
 
 
 <img src="schema.png">
